@@ -18,6 +18,7 @@ dist/
 
 # VSCode
 .vscode/
+*.code-workspace
 # JetBrains
 .idea/
 # Vim
