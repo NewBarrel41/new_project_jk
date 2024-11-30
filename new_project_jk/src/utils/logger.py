@@ -1,6 +1,6 @@
 import logging
 
-from config import settings
+from config.settings import LOG_FORMAT, LOG_DATE_FORMAT, LOG_FILE, ENCODING
 
 
 def get_logger(name: str = __name__) -> logging.Logger:
@@ -20,10 +20,10 @@ def get_logger(name: str = __name__) -> logging.Logger:
     logger.setLevel(logging.DEBUG)
 
     # 共通のフォーマット設定
-    formatter = logging.Formatter(settings.LOG_FORMAT, settings.LOG_DATE_FORMAT)
+    formatter = logging.Formatter(LOG_FORMAT, LOG_DATE_FORMAT)
 
     # ファイル出力（全レベル）
-    fh = logging.FileHandler(settings.LOG_FILE, encoding=settings.ENCODING)
+    fh = logging.FileHandler(LOG_FILE, encoding=ENCODING)
     fh.setFormatter(formatter)
 
     # コンソール出力（INFO以上）
