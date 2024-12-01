@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "new_project_jk"
-version = "0.1.0"
+version = "0.0.1"
 description = "A simulation RPG game project"
 authors = [
     { name="NewBarrel", email="newbarrel@example.com" }
@@ -16,3 +16,6 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["new_project_jk"]
+
+[tool.pytest.ini_options]
+addopts = "-v -s --cov=new_project_jk/ --cov-branch --cov-report=term-missing --cov-report=html"
