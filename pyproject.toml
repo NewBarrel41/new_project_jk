@@ -9,7 +9,7 @@ description = "A simulation RPG game project"
 authors = [
     { name="NewBarrel", email="newbarrel@example.com" }
 ]
-license = { text = "Copyright © 2024.11.30 NewBarrel. All rights reserved." }
+license = { text = "Copyright © 2024.12.01 NewBarrel. All rights reserved." }
 dependencies = [
     "pygame>=2.0.0",
 ]
