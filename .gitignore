@@ -32,6 +32,7 @@ logs/
 # ローカル設定
 config.local.yaml
 .env
+*.lnk
 
 # テスト関連
 .pytest_cache/
