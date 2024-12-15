@@ -26,8 +26,8 @@ def main():
 
         # BGMの読み込みと再生（無限ループ再生）
         # pygame.mixer.music.load(BGM.TITLE)
-        pygame.mixer.music.set_volume(0.1)
-        pygame.mixer.music.play(-1)
+        # pygame.mixer.music.set_volume(0.1)
+        # pygame.mixer.music.play(-1)
 
         # フォントとテキストの設定
         font = pygame.font.Font(None, 74)

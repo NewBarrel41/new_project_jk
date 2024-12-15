@@ -1,25 +1,55 @@
-# ログ設定
-LOG_FILE = 'logs/app.log'
-LOG_TEST_FILE = 'logs/app_test.log'
-LOG_FORMAT = '[%(asctime)s.%(msecs)03d][%(levelname)s][%(pathname)s] %(message)s'
-LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+from types import SimpleNamespace as sns
 
 # アプリケーション設定(更新するときはpyproject.tomlも一緒に更新する)
 APP_NAME = 'new_project_jk'
 VERSION = '0.0.1'
 DEBUG = True
-
-# 汎用設定
 ENCODING = 'utf-8'
 
+# ログ設定
+LOG = sns(
+    FILE='logs/app.log',
+    TEST_FILE='logs/app_test.log',
+    FORMAT='[%(asctime)s.%(msecs)03d][%(levelname)s][%(pathname)s] %(message)s',
+    DATE_FORMAT='%Y-%m-%d %H:%M:%S',
+)
 
 # ゲーム設定
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-BG_COLOR = (0, 0, 0)
-TEXT_COLOR = (255, 255, 255)
 FPS = 60
-
-
-class BGM:
-    TITLE = 'media/sound/001.mp3'
+BG = sns(
+    WIDTH=800,   # ゲーム画面の横幅
+    HEIGHT=600,  # ゲーム画面の縦幅
+    COLOR=(0, 0, 0)  # ゲーム画面の背景色
+)
+TEXT_COLOR = (255, 255, 255)
+GRID_SIZE = 15  # マップ中の地雷配置グリッドのサイズ
+CELL_SIZE = 40  # セルの大きさ (ピクセル)
+MARGIN = sns(
+    TOP=80,     # マップ上端からのマージン
+    BOTTOM=80,  # マップ下端からのマージン
+    LEFT=60,    # マップ左端からのマージン
+    RIGHT=60    # マップ右端からのマージン
+)
+BGM = sns(
+    TITLE='media/sound/001.mp3',
+    OPPOSITION='',
+    AURORA='',
+    ASTEROID='',
+    NOVA='',
+    SUPERNOVA='',
+)
+IMAGE = sns(
+    BACKGROUND='media/image/background.png',
+    COVERED='media/image/covered_cell.png',
+    MINE='media/image/mine.png',
+    PERA='media/image/pera.png',
+    ITEM='media/image/item.png',
+    CALM='media/image/0.png',
+    MIST='media/image/1.png',
+    THUNDER='media/image/2.png',
+    MIRAGE='media/image/3.png',
+    TORNADO='media/image/4.png',
+    EARTHQUAKE='media/image/5.png',
+    TSUNAMI='media/image/6.png',
+    ERUPTION='media/image/7.png',
+)

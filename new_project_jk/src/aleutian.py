@@ -23,36 +23,38 @@ class MainGameLogic:
         self.stage = 1
         self.area = 1
         self.grid_size = 15
+        self.grid = [[0] * self.grid_size for _ in range(self.grid_size)]
         # self.grid = [[[(i*self.grid_size)+j, CellState()] for j in range(self.grid_size)] for i in range(self.grid_size)]
-        self.grid = [CellState(index=i) * self.grid_size for i in range(self.grid_size)]
-        self.path_route = self.create_safe_path_logic_1(stage=self.stage, area=self.area, size=self.grid_size)
+        # self.grid = [CellState(index=i) * self.grid_size for i in range(self.grid_size)]
+        # self.path_route = self.create_safe_path_logic_1(stage=self.stage, area=self.area, size=self.grid_size)
         self.set_mine()  # 地雷生成
 
     def set_mine(self, max=10):
         # 地雷をランダムに配置
         grid_total = self.grid_size**2
-        masu_list = list(range(grid_total))
+        cell_list = list(range(grid_total))
         for _ in range(max):
             # 選択したインデックスの要素を取り出し、同時にリストから削除
-            chosen_number = masu_list.pop(random.randrange(grid_total))
+            chosen_number = cell_list.pop(random.randrange(grid_total))
             row = chosen_number // self.grid_size
             col = chosen_number % self.grid_size
-            self.grid[row][col][1] = -1  # 地雷を配置
+            self.grid[row][col] = -1  # 地雷を配置
             grid_total -= 1
 
             # 周囲の数字を更新 -> dは変化量(delta)
-            for dy in list(range(-1, 2)):
-                for dx in list(range(-1, 2)):
-                    if dy == 0 and dx == 0:  # 地雷マス自体はスキップ
+            for dy in range(-1, 2):
+                for dx in range(-1, 2):
+                    if dy == 0 and dx == 0:  # 地雷配置したマス自体はスキップ
                         continue
                     row_dy = row + dy
                     col_dx = col + dx
                     # グリッド内かつ地雷でないマスの場合
                     if (0 <= row_dy < self.grid_size and
-                            0 <= col_dx < self.grid_size and self.grid[row_dy][col_dx][1] != -1):
-                        self.grid[row_dy][col_dx][1] += 1
+                            0 <= col_dx < self.grid_size and self.grid[row_dy][col_dx] != -1):
+                        self.grid[row_dy][col_dx] += 1
 
     def create_safe_path_logic_1(self, stage, area, grid_size):
+        """後で作り直す"""
         # スタートからのルートとゴールからのルートが繋がるまで安全地帯ルートを生成する
         goal_axis = grid_size - 1 if grid_size % 2 == 1 else grid_size
         axis_x = goal_axis // 2  # グリッドの中間
@@ -159,7 +161,7 @@ class MainGameLogic:
         for y in range(self.grid_size):
             for x in range(self.grid_size):
                 rect = pygame.Rect(x * cell_width, y * cell_height, cell_width, cell_height)
-                if self.revealed[y][x]:
+                if self.grid[x]:
                     if self.grid[y][x] == -1:
                         pygame.draw.rect(screen, (255, 0, 0), rect)  # 地雷は赤色で表示
                     else:
@@ -171,10 +173,10 @@ class MainGameLogic:
                     pygame.draw.rect(screen, (100, 100, 100), rect)  # 未開封のマスは暗灰色
 
     def reveal_square(self, x, y):
-        if not (0 <= x < self.grid_size and 0 <= y < self.grid_size) or self.revealed[y][x]:
+        if not (0 <= x < self.grid_size and 0 <= y < self.grid_size) or self.grid[x]:
             return
 
-        self.revealed[y][x] = True
+        self.grid[x] = True
 
         if self.grid[y][x] == -1:
             logger.info("Game Over! Hit a mine.")
@@ -184,4 +186,5 @@ class MainGameLogic:
 
 
 if __name__ == "__main__":
-    MainGameLogic()
+    game_main = MainGameLogic()
+    _ = game_main.select_screen()
