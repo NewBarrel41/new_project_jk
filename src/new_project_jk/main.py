@@ -1,12 +1,7 @@
 import pygame
 import sys
-
-from src.aleutian import MainGameLogic
+from new_project_jk.chishima import MainGameLogic
 from utils.logger import get_logger
-from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, BG_COLOR, TEXT_COLOR, FPS
-from config.settings import BGM
-
-
 logger = get_logger(__name__)
 
 
@@ -21,18 +16,18 @@ def main():
         pygame.init()
 
         # ゲーム画面の設定
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen = pygame.display.set_mode((BG.WIDTH, BG.HEIGHT))
         pygame.display.set_caption('Game Title Screen')
 
         # BGMの読み込みと再生（無限ループ再生）
-        # pygame.mixer.music.load(BGM.TITLE)
+        # pygame.mixer.music.load(SOUND.TITLE)
         # pygame.mixer.music.set_volume(0.1)
         # pygame.mixer.music.play(-1)
 
         # フォントとテキストの設定
         font = pygame.font.Font(None, 74)
-        text = font.render('Press Any Key to Start', True, TEXT_COLOR)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        text = font.render('Press Any Key to Start', True, MAP.TEXT_COLOR)
+        text_rect = text.get_rect(center=(BG.WIDTH // 2, BG.HEIGHT // 2))
 
         # FPS制御用のクロックオブジェクト
         clock = pygame.time.Clock()
@@ -44,7 +39,7 @@ def main():
         running = True
         while running:
             # 背景色の塗りつぶし
-            screen.fill(BG_COLOR)
+            screen.fill(BG.COLOR)
 
             # イベント処理
             for event in pygame.event.get():
@@ -61,7 +56,7 @@ def main():
             pygame.display.flip()
 
             # FPSの制御
-            clock.tick(FPS)
+            clock.tick(BG.FPS)
 
     except Exception as e:
         # エラーログの出力

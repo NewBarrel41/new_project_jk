@@ -3,9 +3,11 @@ import random
 import sys
 from copy import copy
 from types import SimpleNamespace as sns
+from pathlib import Path
 
 from utils.logger import get_logger
-from config.settings import BG, GRID_SIZE, CELL_SIZE, MARGIN, BGM, IMAGE
+from config.settings import BG, MAP, MARGIN, SOUND, IMAGE
+
 
 class CellState:
     def __init__(self):
@@ -18,76 +20,49 @@ class CellState:
 class MainGameLogic:
     def __init__(self):
         # 基本設定
-        self.grid_size = GRID_SIZE
-        self.cell_size = CELL_SIZE
+        self.grid_size = MAP.GRID_SIZE
+        self.cell_size = MAP.CELL_SIZE
 
         # 画面サイズは背景画像のサイズに合わせる
         self.bg_width = BG.WIDTH
         self.bg_height = BG.HEIGHT
 
-        # マップ設定
-        self.map = sns(
-
-            playable_width=60,    # 画面サイズから左右端のマージンを引いた操作可能エリア
-        )
-
         # プレイ可能エリアのグリッドサイズを計算
-        self.playable_width = (self.bg_width - self.playable_margin.left - self.playable_margin['right']) // self.cell_size
-        self.playable_height = (self.bg_height - self.playable_margin['top'] - self.playable_margin['bottom']) // self.cell_size
+        self.playable_width = (self.bg_width - MARGIN.LEFT - MARGIN.RIGHT) // self.cell_size
+        self.playable_height = (self.bg_height - MARGIN.TOP - MARGIN.BOTTOM) // self.cell_size
 
         # グリッドの初期化
-        self.grid = [[CellState() for _ in range(self.playable_width)] 
-                    for _ in range(self.playable_height)]
+        self.grid = [[CellState() for _ in range(self.playable_width)]
+                     for _ in range(self.playable_height)]
 
         # 画像の読み込み
         self.load_images()
 
-        # 初期設定
-        self.initialize_grid()
+        # 初期地雷生成
+        self.set_mines()
 
     def load_images(self):
-        assets_dir = Path("assets")
+        # 各画像をリサイズ
+        bg_size = (self.bg_width, self.bg_height)
+        cell_size = (self.cell_size, self.cell_size)
         self.images = {
-            'background': pygame.image.load(assets_dir / "background.png"),
-            'numbers': [],
-            'mine': pygame.image.load(assets_dir / "mine.png"),
-            'unopened': pygame.image.load(assets_dir / "unopened.png"),
+            'background': pygame.transform.scale(pygame.image.load(IMAGE.BACKGROUND), bg_size),
+            'covered': pygame.transform.scale(pygame.image.load(IMAGE.COVERED), cell_size),
+            'mine': pygame.transform.scale(pygame.image.load(IMAGE.MINE), cell_size),
+            'numbers': [
+                pygame.transform.scale(pygame.image.load(IMAGE.CALM), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.MIST), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.THUNDER), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.MIRAGE), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.TORNADO), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.EARTHQUAKE), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.TSUNAMI), cell_size),
+                pygame.transform.scale(pygame.image.load(IMAGE.ERUPTION), cell_size)
+            ]
         }
 
-        # 数字の画像を読み込み (1-8)
-        for i in range(1, 9):
-            self.images['numbers'].append(
-                pygame.transform.scale(
-                    pygame.image.load(assets_dir / f"number{i}.png"),
-                    (self.cell_size, self.cell_size)
-                )
-            )
-
-        # その他の画像もリサイズ
-        self.images['mine'] = pygame.transform.scale(
-            self.images['mine'], 
-            (self.cell_size, self.cell_size)
-        )
-        self.images['unopened'] = pygame.transform.scale(
-            self.images['unopened'], 
-            (self.cell_size, self.cell_size)
-        )
-
-        # 背景画像は画面サイズに合わせる
-        self.images['background'] = pygame.transform.scale(
-            self.images['background'],
-            (self.bg_width, self.bg_height)
-        )
-
-    def initialize_grid(self):
+    def set_mines(self, mine_count=20):
         # 地雷を配置（プレイ可能エリア内にランダムに配置）
-        mine_count = (self.playable_width * self.playable_height) // 6  # 全マスの1/6程度を地雷に
-        self.place_mines(mine_count)
-
-        # 周辺の地雷数を計算
-        self.calculate_neighbor_mines()
-
-    def place_mines(self, mine_count):
         placed_mines = 0
         while placed_mines < mine_count:
             x = random.randint(0, self.playable_width - 1)
@@ -97,7 +72,6 @@ class MainGameLogic:
                 self.grid[y][x].is_mine = True
                 placed_mines += 1
 
-    def calculate_neighbor_mines(self):
         for y in range(self.playable_height):
             for x in range(self.playable_width):
                 if not self.grid[y][x].is_mine:

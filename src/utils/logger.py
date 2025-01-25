@@ -1,6 +1,13 @@
 import logging
 from pathlib import Path
-from config.settings import LOG_FILE, LOG_TEST_FILE, LOG_FORMAT, LOG_DATE_FORMAT, ENCODING
+
+
+# ログ設定
+class LOG:
+    FILE = 'logs/app.log'
+    FORMAT = '[%(asctime)s.%(msecs)03d][%(levelname)s][%(pathname)s] %(message)s'
+    DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    ENCODING = 'utf-8'
 
 
 def get_logger(name: str = __name__) -> logging.Logger:
@@ -19,15 +26,12 @@ def get_logger(name: str = __name__) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
-    # ファイル出力先の決定（'test'が含まれていればテストログへ）
-    logfile = Path(LOG_TEST_FILE if 'test_' in name else LOG_FILE)
-
     if not logger.handlers:
         # 共通のフォーマット設定
-        formatter = logging.Formatter(LOG_FORMAT, LOG_DATE_FORMAT)
+        formatter = logging.Formatter(LOG.FORMAT, LOG.DATE_FORMAT)
 
         # ファイル出力（全レベル）
-        fh = logging.FileHandler(logfile, encoding=ENCODING)
+        fh = logging.FileHandler(Path(LOG.FILE), encoding=LOG.ENCODING)
         fh.setFormatter(formatter)
 
         # コンソール出力（INFO以上）

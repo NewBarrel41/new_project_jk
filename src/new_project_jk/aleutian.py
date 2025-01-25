@@ -4,8 +4,8 @@ import sys
 from copy import copy
 from types import SimpleNamespace as sns
 
-from utils.logger import get_logger
-from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, BG_COLOR, FPS
+from src.utils.logger import get_logger
+from src.config.settings import BG, FPS
 
 logger = get_logger(__name__)
 
@@ -129,14 +129,14 @@ class MainGameLogic:
         logger.info("Transitioning to game screen")
 
         # ゲーム画面を描画するループ
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen = pygame.display.set_mode((BG.WIDTH, BG.HEIGHT))
         pygame.display.set_caption('Minesweeper Game')
 
         clock = pygame.time.Clock()
         running = True
 
         while running:
-            screen.fill(BG_COLOR)
+            screen.fill(BG.COLOR)
             self.draw_grid(screen)
 
             for event in pygame.event.get():
@@ -145,8 +145,8 @@ class MainGameLogic:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # 左クリックの場合
                         mouse_x, mouse_y = event.pos
-                        grid_x = mouse_x // (SCREEN_WIDTH // self.grid_size)
-                        grid_y = mouse_y // (SCREEN_HEIGHT // self.grid_size)
+                        grid_x = mouse_x // (BG.WIDTH // self.grid_size)
+                        grid_y = mouse_y // (BG.HEIGHT // self.grid_size)
                         self.reveal_square(grid_x, grid_y)
 
             pygame.display.flip()
