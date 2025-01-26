@@ -1,6 +1,7 @@
 import pytest
 import logging
 from freezegun import freeze_time
+from types import SimpleNamespace as sns
 
 from utils.logger import LOG, get_logger
 
@@ -27,20 +28,15 @@ def reset_logging():
 
 timestamp = '2025-01-25 18:00:00.000'
 params = {
-    '1:ロガーに渡したモジュール名の確認': (
-        {
-            '__name__': __name__
-        },
-        {
-            'level': 'info',
-            'message': 'Test Message.',
-            # 'test_log_time': r'2025-01-25 17:00:00',[%(asctime)s.%(msecs)03d]'
-            'test_log_file': r'logs\app_test.log',
-            '__file__': __file__.replace('C:', 'c:')
-        },
-        {
-            'output': None
-        }
+    '1:ロガーのテスト': (
+        sns(name=__name__),
+        sns(
+            level='info',
+            message='Test Message.',
+            test_log_file=r'logs\app_test.log',
+            file=__file__.replace('C:', 'c:')
+        ),
+        sns(output=None)
     ),
 }
 
@@ -49,13 +45,16 @@ params = {
 @pytest.mark.parametrize('_input, _mock, _output', list(params.values()), ids=list(params.keys()))
 def test_get_logger_output(caplog, mocker, _input, _mock, _output):
     # モック
-    mocker.patch.object(LOG, 'FILE', _mock['test_log_file'])  # クラス変数の場合はreturn_valueは要らない
+    mocker.patch.object(LOG, 'FILE', _mock.test_log_file)  # クラス変数の場合はreturn_valueは要らない
     mocker.Mock(spec=logging)
 
     # テストコード実行
-    logger = get_logger(_input['__name__'])
-    getattr(logger, _mock['level'])(_mock['message'])
-    test_log = simple_with_oepn(_mock['test_log_file'], 'r')
+    logger = get_logger(_input.name)
+    getattr(logger, _mock.level)(_mock.message)
+
+    # アサート
+    test_log = simple_with_oepn(_mock.test_log_file, 'r')
     test_log = test_log.split('\n')[-2]
-    expected_log = f"[{timestamp}][{_mock['level'].upper()}][{_mock['__file__']}] {_mock['message']}"
-    assert test_log == expected_log
+    expected_log = f'[{timestamp}][{_mock.level.upper()}][{_mock.file}] {_mock.message}'
+    assert test_log == expected_log  # ログが想定通りか確認
+    assert logger == get_logger(_input.name)  # 同じ__name__で呼ばれたときに同じハンドラを返すか確認

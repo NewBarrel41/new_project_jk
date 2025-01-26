@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]  # リストとして指定
+where = ["src"]
 include = ["new_project_jk*"]
 
 [tool.pytest.ini_options]
